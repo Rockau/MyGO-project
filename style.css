@@ -47,10 +47,14 @@ a { color: inherit; }
 }
 .nav.solid { background: rgba(7, 8, 15, 0.72); backdrop-filter: blur(14px); padding-block: 10px; border-bottom: 1px solid var(--line); }
 .nav-logo { font-family: var(--serif); font-weight: 900; font-size: 1.25rem; text-decoration: none; letter-spacing: 0.02em; }
-.nav-logo span, .hero-title span, .footer-title span {
-  display: inline-block;
-  background: var(--rainbow); -webkit-background-clip: text; background-clip: text; color: transparent;
-}
+/* Logo 的五个感叹号：从左到右依次是 乐奈 / 爱音 / 灯 / 爽世 / 立希 的代表色 */
+.bangs { display: inline-block; }
+.bangs i { font-style: normal; }
+.bangs i:nth-child(1) { color: #77dd77; }
+.bangs i:nth-child(2) { color: #ff8899; }
+.bangs i:nth-child(3) { color: #77bbdd; }
+.bangs i:nth-child(4) { color: #ffdd88; }
+.bangs i:nth-child(5) { color: #7777aa; }
 .nav ul { display: flex; gap: clamp(10px, 2vw, 28px); list-style: none; margin: 0; padding: 0; }
 .nav ul a { text-decoration: none; font-size: 0.9rem; color: var(--muted); position: relative; padding: 4px 0; transition: color 0.2s; }
 .nav ul a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: var(--brand); transform: scaleX(0); transition: transform 0.3s var(--ease); }
@@ -114,7 +118,7 @@ h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4.4vw, 3.2re
   margin: 0; font-family: var(--serif); font-weight: 900; line-height: 1; letter-spacing: -0.01em;
   font-size: clamp(3rem, 6.4vw, 6rem); white-space: nowrap; text-shadow: 0 0 40px rgba(143, 168, 255, 0.35);
 }
-.hero-title span { text-shadow: none; filter: drop-shadow(0 0 18px rgba(255, 136, 153, 0.4)); }
+.hero-title .bangs { text-shadow: none; filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.18)); }
 .hero-motto { margin: 18px 0 2px; font-family: var(--serif); font-size: clamp(1.05rem, 2vw, 1.45rem); font-weight: 700; }
 .hero-sub { margin: 0 0 28px; color: var(--muted); }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }

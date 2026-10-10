@@ -527,7 +527,7 @@ initStage({ onSelect: (id) => members.focus(id) });
 
 $('#start-show').addEventListener('click', startShow);
 // 播放时让感叹号跟着节拍跳动
-const beaters = $$('.nav-logo span, .hero-title span, .footer-title span');
+const beaters = $$('.bangs');
 beatBus.addEventListener('beat', (e) => {
   const k = e.detail.bar ? 1.06 : 1.03;
   beaters.forEach((el) =>
