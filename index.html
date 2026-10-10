@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MyGO!!!!! — 迷子でもいい、迷子でも進め</title>
+  <meta name="description" content="《BanG Dream! It's MyGO!!!!!》粉丝介绍页：成员、故事、音乐与设定集。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+  </script>
+  <script type="module" src="js/main.js"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ctext x=%2232%22 y=%2250%22 font-size=%2248%22 text-anchor=%22middle%22 font-weight=%22900%22 fill=%22%2377bbdd%22%3E!%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a class="nav-logo" href="#top">MyGO<span>!!!!!</span></a>
+    <ul>
+      <li><a href="#about">乐队</a></li>
+      <li><a href="#members">成员</a></li>
+      <li><a href="#story">故事</a></li>
+      <li><a href="#music">音乐</a></li>
+      <li><a href="#scenes">舞台</a></li>
+      <li><a href="#gallery">设定集</a></li>
+      <li><a href="#bluray">蓝光</a></li>
+      <li><a href="#related">相关</a></li>
+    </ul>
+  </nav>
+
+  <!-- 1. Hero：Three.js 舞台 -->
+  <header class="hero" id="top">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="stage" id="stage"></div>
+    <div class="stage-label" id="stage-label" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <p class="hero-kicker">BanG Dream! It's</p>
+      <h1 class="hero-title">MyGO<span>!!!!!</span></h1>
+      <p class="hero-motto">迷子でもいい、迷子でも進め。</p>
+      <p class="hero-sub">哪怕迷路也没关系，迷路了也要继续前进。</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="start-show" type="button"><span class="btn-dot"></span>开始演出</button>
+        <a class="btn btn-ghost" href="#members">认识成员</a>
+      </div>
+      <p class="hero-hint">把鼠标移到舞台上的成员身上，点击即可跳转到她的介绍</p>
+    </div>
+    <a class="scroll-cue" href="#about" aria-label="向下滚动"><span></span></a>
+  </header>
+
+  <main>
+    <!-- 2. 关于乐队 -->
+    <section class="section about" id="about">
+      <div class="section-head reveal">
+        <p class="eyebrow">ABOUT</p>
+        <h2>五个迷路的少女，<br />组成了一支乐队</h2>
+      </div>
+      <div class="about-grid">
+        <figure class="about-visual reveal" data-lightbox-single="5">
+          <img loading="lazy" alt="设定集主视觉：五人走过夜晚的路口" data-page="5" />
+          <figcaption>「迷うことを迷わない」——设定集主视觉</figcaption>
+        </figure>
+        <div class="about-text reveal">
+          <p><strong>MyGO!!!!!</strong> 是 Bushiroad 企划《BanG Dream!》中的一支乐队。2023 年夏天，动画《BanG Dream! It's MyGO!!!!!》播出（动画制作 サンジゲン，监督 柿本広大，全 13 话）。和系列以往阳光的风格不同，它以细腻、压抑又真实的群像剧在中文圈掀起热潮。</p>
+          <p>乐队名取自「<b>迷子でもいい、迷子でも進め</b>」——「MyGO」的读音正是「迷子（maigo）」，<em>GO</em> 又意味着前进。</p>
+          <p>2024 年，总集篇剧场版（前篇、后篇）上映；2025 年 1 月，续作《BanG Dream! Ave Mujica》播出。</p>
+          <dl class="facts">
+            <div><dt>动画</dt><dd>2023 · 全 13 话</dd></div>
+            <div><dt>制作</dt><dd>サンジゲン</dd></div>
+            <div><dt>角色 / 衣装设计</dt><dd>Craft Egg</dd></div>
+            <div><dt>OP / ED</dt><dd>壱雫空 / 栞</dd></div>
+          </dl>
+          <div class="ring-card">
+            <div class="ring-card-title">Live House「RiNG」</div>
+            <p>乐队的据点，立希打工的地方。</p>
+            <ul>
+              <li><span>定期 Live</span>17:00 开场 · 17:30 开演</li>
+              <li><span>票价</span>学生 ¥600 · 一般 ¥1200</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 成员 -->
+    <section class="members" id="members">
+      <div class="member-bg" aria-hidden="true"></div>
+      <div class="member-overlay" aria-hidden="true">
+        <div class="member-watermark"></div>
+        <div class="member-instrument"></div>
+        <div class="scanlines"></div>
+      </div>
+      <div class="members-inner">
+        <div class="section-head">
+          <p class="eyebrow">MEMBERS</p>
+          <h2>成员介绍</h2>
+          <p class="section-note">点击头像或按 ← / → 切换成员；在背景空白处移动鼠标、点击，看看她们各自的舞台。</p>
+        </div>
+        <div class="member-tabs" role="tablist" aria-label="选择成员"></div>
+        <article class="member" aria-live="polite"></article>
+      </div>
+    </section>
+
+    <!-- 4. 故事 -->
+    <section class="section story" id="story">
+      <div class="story-banner reveal">
+        <img loading="lazy" alt="五人站在高架桥下" data-page="29" />
+        <div class="story-banner-copy">
+          <p class="eyebrow">STORY</p>
+          <h2>故事</h2>
+          <p>从 CRYCHIC 的解散，到 MyGO!!!!! 的诞生。</p>
+        </div>
+      </div>
+      <label class="spoiler-toggle reveal">
+        <input type="checkbox" id="spoiler-all" />
+        <span>显示全部剧透</span>
+      </label>
+      <ol class="timeline"></ol>
+    </section>
+
+    <!-- 5. 音乐 -->
+    <section class="section music" id="music">
+      <div class="music-banner reveal">
+        <img loading="lazy" alt="五人 Live 特写" data-page="6" />
+      </div>
+      <div class="section-head reveal">
+        <p class="eyebrow">MUSIC</p>
+        <h2>音乐</h2>
+        <p class="section-note">点击卡片即可在右下角的播放器播放官方 MV，播放时舞台灯光会跟着节拍律动。</p>
+      </div>
+      <div class="album reveal">
+        <div class="album-disc" aria-hidden="true"><span></span></div>
+        <div>
+          <p class="eyebrow">1st ALBUM</p>
+          <h3 class="album-title"></h3>
+          <p class="album-note"></p>
+        </div>
+      </div>
+      <div class="songs"></div>
+    </section>
+
+    <!-- 6. 舞台与街景 -->
+    <section class="section scenes" id="scenes">
+      <div class="section-head reveal">
+        <p class="eyebrow">STAGES &amp; STREETS</p>
+        <h2>舞台与街景</h2>
+      </div>
+      <div class="scene-grid"></div>
+    </section>
+
+    <!-- 7. 设定集画廊 -->
+    <section class="section gallery" id="gallery">
+      <div class="section-head reveal">
+        <p class="eyebrow">ART BOOK</p>
+        <h2>设定集画廊</h2>
+        <p class="section-note">《BanG Dream! It's MyGO!!!!!》设定集「FOOTPRINTS」精选页。点击图片放大，用 ← / → 翻页，再次点击可局部放大。</p>
+      </div>
+      <div class="gallery-tabs" role="tablist"></div>
+      <div class="masonry"></div>
+    </section>
+
+    <!-- 7.5 蓝光特典 -->
+    <section class="section bluray" id="bluray">
+      <div class="section-head reveal">
+        <p class="eyebrow">BLU-RAY</p>
+        <h2>蓝光特典</h2>
+        <p class="section-note">动画蓝光上巻、下巻附赠的封面、光盘与特典小册子扫描。点击图片放大，用 ← / → 翻页。</p>
+      </div>
+      <div class="bd-volumes"></div>
+      <div class="gallery-tabs bd-tabs" role="tablist"></div>
+      <div class="masonry natural bd-grid"></div>
+    </section>
+
+    <!-- 8. 相关乐队 -->
+    <section class="section related" id="related">
+      <div class="section-head reveal">
+        <p class="eyebrow">RELATED</p>
+        <h2>CRYCHIC 与 Ave Mujica</h2>
+      </div>
+      <div class="related-intro"></div>
+      <div class="mujica-grid"></div>
+    </section>
+  </main>
+
+  <!-- 9. 页脚 -->
+  <footer class="footer">
+    <img class="footer-bg" loading="lazy" alt="" data-page="111" />
+    <div class="footer-inner">
+      <p class="footer-title">MyGO<span>!!!!!</span></p>
+      <p class="footer-motto">迷子でもいい、迷子でも進め。</p>
+      <p class="footer-legal">本页为粉丝制作的非商业介绍页。角色立绘、设定集图片、音乐与视频版权均归 ©BanG Dream! Project / ©Bushiroad 所有。</p>
+    </div>
+  </footer>
+
+  <!-- 悬浮播放器 -->
+  <aside class="player" id="player" aria-label="背景音乐播放器">
+    <ol class="player-list"></ol>
+    <div class="player-bar">
+      <div class="disc" aria-hidden="true"><span></span></div>
+      <div class="player-meta">
+        <div class="player-title">—</div>
+        <div class="player-status"></div>
+      </div>
+      <div class="player-ctrl">
+        <button type="button" data-act="prev" aria-label="上一首">⏮</button>
+        <button type="button" data-act="play" class="play" aria-label="播放"><i></i></button>
+        <button type="button" data-act="next" aria-label="下一首">⏭</button>
+        <button type="button" data-act="list" aria-label="曲目列表">☰</button>
+      </div>
+    </div>
+    <div class="player-settings">
+      <label class="ps-row">
+        <span class="ps-label">音量</span>
+        <input type="range" id="ps-volume" min="0" max="100" step="1" value="60" />
+        <output for="ps-volume">60</output>
+      </label>
+      <label class="ps-row ps-blur">
+        <span class="ps-label">模糊</span>
+        <input type="range" id="ps-blur" min="0" max="100" step="1" value="20" />
+        <output for="ps-blur">20%</output>
+      </label>
+    </div>
+  </aside>
+
+  <!-- 演出画面模式切换：折叠 → 小窗 → 舞台背景 → 折叠 -->
+  <button class="video-mode" id="video-mode" type="button" data-mode="hidden">
+    <span class="vm-icon" aria-hidden="true"></span><span class="vm-text">展开画面</span>
+  </button>
+  <!-- YouTube 播放器宿主：始终在这里，不移动 DOM，只切换样式，避免视频重新加载 -->
+  <div class="yt-host" id="yt-host" data-mode="hidden"><div id="yt-frame"></div></div>
+
+  <!-- 灯箱 -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" type="button" aria-label="关闭">×</button>
+    <button class="lb-prev" type="button" aria-label="上一张">‹</button>
+    <figure class="lb-stage"><img alt="" /></figure>
+    <button class="lb-next" type="button" aria-label="下一张">›</button>
+    <div class="lb-caption"></div>
+  </div>
+</body>
+</html>
