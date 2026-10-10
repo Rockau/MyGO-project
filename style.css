@@ -482,7 +482,7 @@ body[data-video='backdrop'] .ps-blur { display: flex; }
 }
 .yt-host[data-mode='backdrop'] iframe {
   inset: auto; left: 50%; top: 50%; width: max(100%, 177.78vh); height: max(56.25vw, 100vh);
-  transform: translate(-50%, -50%) scale(1.12); filter: blur(var(--video-blur, 10px)) brightness(0.5) saturate(1.25);
+  transform: translate(-50%, -50%) scale(1.12); filter: blur(var(--video-blur, 0px)) brightness(0.5) saturate(1.25);
 }
 .hero { z-index: 1; }
 .hero-bg { transition: opacity 0.8s; }
