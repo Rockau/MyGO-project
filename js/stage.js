@@ -31,20 +31,21 @@ export function initStage({ onSelect }) {
 
   scene.add(new THREE.AmbientLight(0x404870, 0.6));
 
-  // 舞台地面：微微反光，承接聚光灯的彩色光斑
+  // 地面：夜晚的十字路口（参考设定集主视觉），五人站在路口中央，四周是斑马线；边缘渐隐融入背景
+  const floorTex = makeCrossroadTexture(mobile ? 1024 : 2048);
+  floorTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   const floor = new THREE.Mesh(
-    new THREE.CircleGeometry(9, 64),
-    new THREE.MeshStandardMaterial({ color: 0x0c0e1c, roughness: 0.38, metalness: 0.55 }),
+    new THREE.PlaneGeometry(FLOOR_SIZE, FLOOR_SIZE),
+    new THREE.MeshStandardMaterial({
+      map: floorTex, color: 0xa4aabb, roughness: 0.6, metalness: 0.25, transparent: true,
+      // 自发光让斑马线在暗处也隐约可见，不完全依赖聚光灯
+      emissive: 0xffffff, emissiveMap: floorTex, emissiveIntensity: 0.14,
+    }),
   );
   floor.rotation.x = -Math.PI / 2;
+  floor.position.z = -CROSS_CENTER; // 路口中心在五人身后，五人站在靠镜头一侧的斑马线上
+  floor.renderOrder = -1;
   scene.add(floor);
-  const rim = new THREE.Mesh(
-    new THREE.RingGeometry(4.6, 4.65, 96),
-    new THREE.MeshBasicMaterial({ color: 0x8aa0ff, transparent: true, opacity: 0.25 }),
-  );
-  rim.rotation.x = -Math.PI / 2;
-  rim.position.y = 0.01;
-  scene.add(rim);
 
   const loader = new THREE.TextureLoader();
   const glowTex = makeGlowTexture();
@@ -253,7 +254,6 @@ export function initStage({ onSelect }) {
       b.mat.uniforms.uOpacity.value = live * (0.12 + pulse * 0.02);
       b.beam.visible = live > 0.01;
     }
-    rim.material.opacity = 0.2 + live * 0.1 + pulse * 0.08;
 
     const p = dustGeo.attributes.position.array;
     for (let i = 0; i < COUNT; i++) {
@@ -266,6 +266,108 @@ export function initStage({ onSelect }) {
     renderer.render(scene, camera);
   }
   frame();
+}
+
+// 十字路口地面贴图：沥青底 + 四个方向的斑马线 + 停止线，最后用径向渐变把边缘淡出到透明。
+// 贴图覆盖 FLOOR_SIZE × FLOOR_SIZE 的世界尺寸，中心是五人站立的路口中央。
+const FLOOR_SIZE = 26;
+const INNER = 3.8; // 斑马线内沿离路口中心的距离（米），也是马路半宽
+const DEPTH = 3.6; // 斑马线宽度（沿过街方向）
+const CROSS_CENTER = INNER + DEPTH / 2 + 0.3;
+
+function makeCrossroadTexture(px) {
+  const c = document.createElement('canvas');
+  c.width = c.height = px;
+  const g = c.getContext('2d');
+  const u = px / FLOOR_SIZE; // 每米对应的像素
+  const mid = px / 2;
+  const w2p = (m) => mid + m * u; // 世界坐标（米）→ 像素
+
+  // 沥青：深蓝灰底色 + 细颗粒噪点
+  g.fillStyle = '#1b1e29';
+  g.fillRect(0, 0, px, px);
+  const img = g.getImageData(0, 0, px, px);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * 14;
+    d[i] += n;
+    d[i + 1] += n;
+    d[i + 2] += n;
+  }
+  g.putImageData(img, 0, 0);
+
+  // 路口中央（五人所在）略亮，像被路灯照着的路面
+  const glow = g.createRadialGradient(mid, mid + CROSS_CENTER * u, 0, mid, mid + CROSS_CENTER * u, 5 * u);
+  glow.addColorStop(0, 'rgba(255,250,235,0.10)');
+  glow.addColorStop(1, 'rgba(255,250,235,0)');
+  g.fillStyle = glow;
+  g.fillRect(0, 0, px, px);
+
+  // 斑马线：路口四边各一组，条纹垂直于行人过街方向
+  const SPAN = INNER * 2 - 0.4; // 斑马线横跨整条马路
+
+  // 四个转角是人行道：比路面略亮，带路缘线和方砖缝
+  const corner = (sx, sz) => {
+    const x0 = sx > 0 ? w2p(INNER) : 0;
+    const z0 = sz > 0 ? w2p(INNER) : 0;
+    const w = mid - INNER * u;
+    g.fillStyle = '#262a37';
+    g.fillRect(x0, z0, w, w);
+    g.strokeStyle = 'rgba(255,255,255,0.05)';
+    g.lineWidth = Math.max(1, u * 0.03);
+    for (let t = 0; t < w; t += u * 0.8) {
+      g.beginPath(); g.moveTo(x0 + t, z0); g.lineTo(x0 + t, z0 + w); g.stroke();
+      g.beginPath(); g.moveTo(x0, z0 + t); g.lineTo(x0 + w, z0 + t); g.stroke();
+    }
+    // 路缘
+    g.fillStyle = 'rgba(200,205,215,0.35)';
+    const cx = sx > 0 ? w2p(INNER) : w2p(-INNER) - 0.15 * u;
+    const cz = sz > 0 ? w2p(INNER) : w2p(-INNER) - 0.15 * u;
+    g.fillRect(cx, z0, 0.15 * u, w);
+    g.fillRect(x0, cz, w, 0.15 * u);
+  };
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) corner(sx, sz);
+  const BAR = 0.45; // 单条白线宽
+  const GAP = 0.45;
+  g.fillStyle = 'rgba(226,229,236,0.78)';
+  const bars = Math.floor(SPAN / (BAR + GAP));
+  for (let k = 0; k < bars; k++) {
+    const a = -SPAN / 2 + k * (BAR + GAP) + GAP / 2;
+    // 前、后两组（x 方向排列的竖条）
+    for (const s of [-1, 1]) {
+      const z0 = s > 0 ? INNER : -INNER - DEPTH;
+      g.fillRect(w2p(a), w2p(z0), BAR * u, DEPTH * u);
+      // 左、右两组（z 方向排列的横条）
+      const x0 = s > 0 ? INNER : -INNER - DEPTH;
+      g.fillRect(w2p(x0), w2p(a), DEPTH * u, BAR * u);
+    }
+  }
+
+  // 停止线和车道线（斑马线外侧）
+  g.fillStyle = 'rgba(232,234,240,0.55)';
+  const STOP = INNER + DEPTH + 0.9;
+  for (const s of [-1, 1]) {
+    g.fillRect(w2p(-SPAN / 2), w2p(s * STOP) - 0.09 * u, (SPAN / 2) * u, 0.18 * u);
+    g.fillRect(w2p(s * STOP) - 0.09 * u, w2p(0), 0.18 * u, (SPAN / 2) * u);
+  }
+  g.fillStyle = 'rgba(240,200,90,0.5)'; // 中央黄线
+  for (const s of [-1, 1]) {
+    g.fillRect(w2p(-0.12), w2p(s > 0 ? STOP : -FLOOR_SIZE / 2), 0.24 * u, (FLOOR_SIZE / 2 - STOP) * u);
+    g.fillRect(w2p(s > 0 ? STOP : -FLOOR_SIZE / 2), w2p(-0.12), (FLOOR_SIZE / 2 - STOP) * u, 0.24 * u);
+  }
+
+  // 边缘淡出：径向渐变作为透明度遮罩，没有生硬的边界
+  g.globalCompositeOperation = 'destination-in';
+  const fade = g.createRadialGradient(mid, mid + CROSS_CENTER * u, 2 * u, mid, mid + CROSS_CENTER * u, mid * 0.95);
+  fade.addColorStop(0, 'rgba(0,0,0,1)');
+  fade.addColorStop(0.4, 'rgba(0,0,0,0.9)');
+  fade.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = fade;
+  g.fillRect(0, 0, px, px);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 function makeGlowTexture() {
