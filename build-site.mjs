@@ -45,6 +45,11 @@ const copy = (rel) => {
 ['index.html', 'style.css', 'js'].forEach(copy);
 for (const m of MEMBERS) for (const o of OUTFITS) copy(o.path(m.file));
 for (const m of MEMBERS) copy(`${AVATAR_DIR}/${m.file}/${m.avatar}`);
+copy('熊猫/熊猫.png'); // 立希背景点击弹出的熊猫（memberBg.js）
+copy('MYGO五人gif'); // 入场动画随机两位成员的动图（index.html）
+for (const m of MEMBERS) copy(`MYGO角色签名/${m.file}.png`); // 成员签名（main.js）
+// copy('网页入场动画素材/MYGO的logo蓝色的.jpeg');  // 后续动画启用
+// copy('网页入场动画素材/收尾动作.jpg');             // 后续动画启用
 for (const n of book) copy(`${BOOK_DIR}/${String(n).padStart(3, '0')}.jpg`);
 for (const n of bd) copy(`${BD_DIR}/${String(n).padStart(2, '0')}.jpg`);
 

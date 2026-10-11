@@ -1,4 +1,4 @@
-import { MEMBERS, OUTFITS, SONGS, ALBUM, STORY, SCENES, RELATED, GALLERY, BLURAY, bookPage, bdPage, outfitSrc, avatarSrc } from './data.js';
+import { MEMBERS, OUTFITS, SONGS, ALBUM, STORY, SCENES, RELATED, GALLERY, BLURAY, bookPage, bdPage, outfitSrc, avatarSrc, signSrc } from './data.js';
 import { initPlayer, playSong, startShow, beatBus } from './player.js';
 import { initStage } from './stage.js';
 import { initMemberBg } from './memberBg.js';
@@ -172,6 +172,7 @@ function initMembers() {
     return `
       <div class="member-grid">
         <div class="portrait-col">
+          <p class="portrait-romaji" aria-hidden="true">${m.romaji}</p>
           <div class="portrait" data-outfit="live">
             <div class="portrait-glow"></div>
             <div class="portrait-floor"></div>
@@ -186,6 +187,7 @@ function initMembers() {
           </div>
         </div>
         <div class="profile">
+          <span class="profile-sign" style="--sign:url('${signSrc(m)}');--sign-ar:${m.signRatio};--sign-scale:${Math.sqrt(m.signRatio / 2).toFixed(3)}" role="img" aria-label="${m.nameZh}的签名"></span>
           <p class="profile-part">${m.part}<span>${m.partZh}</span></p>
           <h3 class="profile-name"><span class="ja">${m.nameJa}</span><span class="zh">${m.nameZh}</span></h3>
           <p class="profile-romaji">${m.romaji}</p>

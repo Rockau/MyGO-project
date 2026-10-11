@@ -200,6 +200,18 @@ h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4.4vw, 3.2re
 .member-grid { display: grid; grid-template-columns: minmax(280px, 0.9fr) 1.1fr; gap: clamp(24px, 4vw, 64px); align-items: start; }
 
 .portrait-col { display: flex; flex-direction: column; align-items: center; position: sticky; top: 70px; }
+/* 立绘左侧的竖排罗马字：低透明度的代表色，压在立绘下层，只做装饰 */
+.portrait-romaji {
+  position: absolute; left: 0; top: 4%; bottom: 16%; margin: 0; pointer-events: none;
+  display: flex; align-items: center; gap: 18px;
+  writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap;
+  font-family: var(--serif); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(0.85rem, 1.25vw, 1.2rem); letter-spacing: 0.45em;
+  color: rgba(var(--c-rgb), 0.4); transition: color 0.6s;
+}
+.portrait-romaji::before, .portrait-romaji::after { content: ''; flex: 1; width: 1px; }
+.portrait-romaji::before { background: linear-gradient(transparent, rgba(var(--c-rgb), 0.3)); }
+.portrait-romaji::after { background: linear-gradient(rgba(var(--c-rgb), 0.3), transparent); }
 .portrait {
   --rx: 0deg; --ry: 0deg; --gx: 50%;
   position: relative; width: 100%; aspect-ratio: 1800 / 2160; max-height: 74vh;
@@ -240,6 +252,16 @@ h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4.4vw, 3.2re
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .profile::before { content: ''; position: absolute; left: 0; top: 24px; bottom: 24px; width: 3px; border-radius: 3px; background: var(--c); box-shadow: 0 0 14px var(--c); }
+/* 成员签名：透明底笔迹图当遮罩，填成员代表色；斜放在资料卡右上角，一半探出卡片边缘。
+   各签名宽高比不同（灯、乐奈偏扁，爽世偏高），按面积统一大小：--sign-scale = √(宽高比 / 2) */
+.profile-sign {
+  position: absolute; right: clamp(10px, 2vw, 28px); top: 0; z-index: 2; pointer-events: none;
+  width: calc(clamp(150px, 14vw, 215px) * var(--sign-scale, 1)); aspect-ratio: var(--sign-ar, 2);
+  transform: translateY(-62%) rotate(-5deg);
+  background: var(--c);
+  -webkit-mask: var(--sign) center / contain no-repeat; mask: var(--sign) center / contain no-repeat;
+  filter: drop-shadow(0 0 8px rgba(var(--c-rgb), 0.5));
+}
 .profile-part { margin: 0; font-size: 0.8rem; letter-spacing: 0.25em; color: var(--c); font-weight: 700; text-transform: uppercase; }
 .profile-part span { margin-left: 12px; letter-spacing: 0.1em; color: var(--muted); }
 .profile-name { margin: 6px 0 0; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
@@ -426,11 +448,9 @@ h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4.4vw, 3.2re
   backdrop-filter: blur(16px); box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8); overflow: hidden;
 }
 .player-bar { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
-/* 音量 / 模糊度：一行精简滑块；模糊度只在「铺满舞台」时出现 */
+/* 音量：一行精简滑块 */
 .player-settings { display: flex; gap: 14px; padding: 0 14px 10px; }
 .ps-row { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: var(--muted); }
-.ps-blur { display: none; }
-body[data-video='backdrop'] .ps-blur { display: flex; }
 .ps-label { flex: none; }
 .ps-row output { flex: none; width: 2.6em; text-align: right; font-variant-numeric: tabular-nums; color: #c7ccdf; }
 .ps-row input[type='range'] {
@@ -486,7 +506,7 @@ body[data-video='backdrop'] .ps-blur { display: flex; }
 }
 .yt-host[data-mode='backdrop'] iframe {
   inset: auto; left: 50%; top: 50%; width: max(100%, 177.78vh); height: max(56.25vw, 100vh);
-  transform: translate(-50%, -50%) scale(1.12); filter: blur(var(--video-blur, 0px)) brightness(0.5) saturate(1.25);
+  transform: translate(-50%, -50%) scale(1.12); filter: brightness(0.5) saturate(1.25);
 }
 .hero { z-index: 1; }
 .hero-bg { transition: opacity 0.8s; }
@@ -558,4 +578,70 @@ body.video-ready .video-mode { display: flex; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .reveal { opacity: 1; transform: none; }
+}
+
+
+/* === Intro overlay === */
+/* 纯 CSS 固定动画：出场时间全部写死在 animation-delay 里，只动 transform / opacity，
+   由合成线程播放，页面加载时主线程再忙也不掉帧。时间轴：
+   !×5 每隔 130ms 弹入（各 500ms）→ 1020ms 全部到位 → 停留 400ms → 1420ms 起淡出 350ms */
+
+#intro {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  /* 与「MYGO五人gif」的纯色背景完全一致，动图贴上去看不出边界 */
+  background: #7BCCE0;
+  will-change: opacity;
+  animation: intro-out 0.35s ease 1.42s forwards;
+}
+@keyframes intro-out {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* 两位成员的动图（720×1280 竖图，人物在画面中间），分列感叹号左右 */
+.intro-gif {
+  position: absolute; top: 50%;
+  height: min(84vh, 96vw); aspect-ratio: 720 / 1280;
+  transform: translate(-50%, -50%);
+  /* 裁掉最底下 31 行（第 1249 行起）的版权水印；人物最低到第 1248 行，不受影响 */
+  clip-path: inset(0 0 2.43% 0);
+  opacity: 0; transition: opacity 0.25s ease;
+}
+.intro-gif.loaded { opacity: 1; }
+.intro-gif-left { left: calc(50% - clamp(230px, 27vw, 520px)); }
+.intro-gif-right { left: calc(50% + clamp(230px, 27vw, 520px)); }
+/* 竖屏：放不下左右两侧，改到下方两角，感叹号仍在正中 */
+@media (max-aspect-ratio: 1 / 1) {
+  .intro-gif { top: auto; bottom: 0; height: min(44vh, 88vw); transform: translateX(-50%); }
+  .intro-gif-left { left: 27%; }
+  .intro-gif-right { left: 73%; }
+}
+
+.intro-bangs {
+  position: relative; z-index: 1;
+  display: flex; gap: clamp(12px, 3.2vmin, 28px);
+  align-items: flex-end;
+}
+.intro-bang {
+  display: block;
+  /* 系统字体：不等网络字体，避免动画中途换字形 */
+  font-family: 'Arial Black', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 900;
+  font-size: clamp(64px, 15vmin, 140px);
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: intro-bang-in 0.5s cubic-bezier(.22, 1.4, .6, 1) forwards;
+  animation-delay: calc(var(--i) * 130ms);
+}
+@keyframes intro-bang-in {
+  0%   { opacity: 0; transform: translateY(-110px) scale(1.1); }
+  70%  { opacity: 1; transform: translateY(6px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #intro { display: none; }
 }

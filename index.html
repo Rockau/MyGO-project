@@ -10,12 +10,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script type="importmap">
-    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+    { "imports": { "three": "./js/vendor/three.module.js" } }
   </script>
   <script type="module" src="js/main.js"></script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ctext x=%2232%22 y=%2250%22 font-size=%2248%22 text-anchor=%22middle%22 font-weight=%22900%22 fill=%22%2377bbdd%22%3E!%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
+  <!-- 入场动画：纯 CSS 固定动画（见 style.css「Intro overlay」），不依赖 JS 计时 -->
+  <div id="intro" aria-hidden="true">
+    <img class="intro-gif intro-gif-left" alt="" />
+    <div class="intro-bangs">
+      <span class="intro-bang" style="--i:0">!</span>
+      <span class="intro-bang" style="--i:1">!</span>
+      <span class="intro-bang" style="--i:2">!</span>
+      <span class="intro-bang" style="--i:3">!</span>
+      <span class="intro-bang" style="--i:4">!</span>
+    </div>
+    <img class="intro-gif intro-gif-right" alt="" />
+  </div>
+  <script>
+    (function () {
+      var intro = document.getElementById('intro');
+      // 每次随机挑两位成员的动图放在感叹号左右；加载完再淡入，没来得及加载就不出现
+      var names = ['高松灯', '千早爱音', '要乐奈', '长崎爽世', '椎名立希'];
+      var a = Math.floor(Math.random() * 5);
+      var b = (a + 1 + Math.floor(Math.random() * 4)) % 5;
+      [a, b].forEach(function (k, i) {
+        var img = intro.querySelectorAll('.intro-gif')[i];
+        img.onload = function () { img.classList.add('loaded'); };
+        img.src = encodeURI('MYGO五人gif/' + names[k] + '.gif');
+      });
+      // 淡出动画结束后移除 overlay；动画本身不靠这段脚本
+      intro.addEventListener('animationend', function (e) {
+        if (e.target === this) this.remove();
+      });
+    })();
+  </script>
   <div class="noise" aria-hidden="true"></div>
   <div class="progress" aria-hidden="true"></div>
 
@@ -217,11 +247,6 @@
         <span class="ps-label">音量</span>
         <input type="range" id="ps-volume" min="0" max="100" step="1" value="60" />
         <output for="ps-volume">60</output>
-      </label>
-      <label class="ps-row ps-blur">
-        <span class="ps-label">模糊</span>
-        <input type="range" id="ps-blur" min="0" max="100" step="1" value="0" />
-        <output for="ps-blur">0%</output>
       </label>
     </div>
   </aside>

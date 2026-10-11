@@ -20,10 +20,14 @@ export const outfitSrc = (member, key) => asset(OUTFITS.find((o) => o.key === ke
 export const AVATAR_DIR = 'MYGO成员的手机头像和背景';
 export const avatarSrc = (member) => asset(`${AVATAR_DIR}/${member.file}/${member.avatar}`);
 
+// 签名：由「MYGO角色签名」里的截图抠成透明底的笔迹图，页面上按成员代表色着色
+export const signSrc = (member) => asset(`MYGO角色签名/${member.file}.png`);
+
 export const MEMBERS = [
   {
     id: 'tomori',
     file: '高松灯',
+    signRatio: 4.43, // 签名图（MYGO角色签名/<名字>.png）的宽高比
     avatar: '4270d5fa33f66dc3cd1c725404ba43833546969439996230.jpg@1192w_1192h.avif', // 手机头像
     nameZh: '高松灯',
     nameJa: '高松 燈',
@@ -60,6 +64,7 @@ export const MEMBERS = [
   {
     id: 'anon',
     file: '千早爱音',
+    signRatio: 2.09,
     avatar: 'fbe0b1eabc3065429e5d9d7a5d1acc8a3546969439996230.jpg@1192w_1192h.avif',
     nameZh: '千早爱音',
     nameJa: '千早 愛音',
@@ -96,6 +101,7 @@ export const MEMBERS = [
   {
     id: 'rana',
     file: '要乐奈',
+    signRatio: 3.63,
     avatar: '5960c536e5825cb270f418c51de25f7a3546969439996230.jpg@1192w_1192h.avif',
     nameZh: '要乐奈',
     nameJa: '要 楽奈',
@@ -132,6 +138,7 @@ export const MEMBERS = [
   {
     id: 'soyo',
     file: '长崎爽世',
+    signRatio: 1.51,
     avatar: 'aad8bf8ad10b0004f3e860d160dc61b53546969439996230.jpg@1192w_1192h.avif',
     nameZh: '长崎爽世',
     nameJa: '長崎 そよ',
@@ -169,6 +176,7 @@ export const MEMBERS = [
   {
     id: 'taki',
     file: '椎名立希',
+    signRatio: 1.93,
     avatar: '18f8077d01c647133f0964638f6436e43546969439996230.jpg@1192w.avif',
     nameZh: '椎名立希',
     nameJa: '椎名 立希',
