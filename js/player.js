@@ -6,7 +6,7 @@ import { SONGS } from './data.js';
 export const beatBus = new EventTarget();
 
 const playable = SONGS.filter((s) => s.youtube);
-const DEFAULT_SONG = '迷星叫'; // 点「开始演出」时播放的第一首
+const DEFAULT_SONG = '迷星叫'; // 点「开始 Live」时播放的第一首
 const state = {
   player: null,
   ready: false,
@@ -160,11 +160,13 @@ export function playSong(title) {
   return true;
 }
 
-export function startShow() {
+// backdrop：首屏「开始 Live」按钮传入，直接把画面铺满舞台
+export function startShow({ backdrop = false } = {}) {
   if (state.failed) {
     flashStatus();
     return;
   }
+  if (backdrop && videoMode !== 'backdrop') setVideoMode('backdrop');
   playIndex(state.index);
 }
 

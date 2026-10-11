@@ -525,7 +525,7 @@ initRelated();
 observeReveals();
 initStage({ onSelect: (id) => members.focus(id) });
 
-$('#start-show').addEventListener('click', startShow);
+$('#start-show').addEventListener('click', () => startShow({ backdrop: true }));
 // 播放时让感叹号跟着节拍跳动
 const beaters = $$('.bangs');
 beatBus.addEventListener('beat', (e) => {
