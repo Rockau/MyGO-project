@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = dirname(fileURLToPath(import.meta.url));
 const out = resolve(process.argv[2] ?? join(root, '..', 'MyGO-site'));
 const data = await import(pathToFileURL(join(root, 'js', 'data.js')).href);
-const { MEMBERS, OUTFITS, SCENES, RELATED, GALLERY, BLURAY } = data;
+const { MEMBERS, OUTFITS, AVATAR_DIR, SCENES, RELATED, GALLERY, BLURAY } = data;
 
 // 设定集页码：成员原稿、画廊、舞台、相关乐队，以及 index.html 里写死的 data-page
 const html = readFileSync(join(root, 'index.html'), 'utf8');
@@ -44,6 +44,7 @@ const copy = (rel) => {
 
 ['index.html', 'style.css', 'js'].forEach(copy);
 for (const m of MEMBERS) for (const o of OUTFITS) copy(o.path(m.file));
+for (const m of MEMBERS) copy(`${AVATAR_DIR}/${m.file}/${m.avatar}`);
 for (const n of book) copy(`${BOOK_DIR}/${String(n).padStart(3, '0')}.jpg`);
 for (const n of bd) copy(`${BD_DIR}/${String(n).padStart(2, '0')}.jpg`);
 

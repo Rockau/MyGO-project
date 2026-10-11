@@ -188,10 +188,10 @@ h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4.4vw, 3.2re
   background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); transition: all 0.35s var(--ease);
 }
 .member-tab .avatar { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex: none; background: rgba(var(--c-rgb), 0.25); }
-.member-tab img { width: 100%; height: 100%; object-fit: cover; transform: scale(2.3); transform-origin: 27% 30%; transition: transform 0.3s; }
+.member-tab img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
 .member-tab span { font-weight: 700; font-size: 0.92rem; }
 .member-tab:hover { border-color: rgba(var(--c-rgb), 0.6); }
-.member-tab:hover img { transform: scale(2.5); }
+.member-tab:hover img { transform: scale(1.08); }
 .member-tab.active { background: rgba(var(--c-rgb), 0.18); border-color: var(--c); box-shadow: 0 0 28px -4px rgba(var(--c-rgb), 0.7); }
 
 .member { transition: opacity 0.26s, transform 0.26s var(--ease); }
