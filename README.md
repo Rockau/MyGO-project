@@ -13,10 +13,10 @@
 
 ## 本地运行
 
-需要 Python。双击 `启动.bat`，或者在项目目录里执行：
+需要 Node.js。双击 `启动.bat`，或者在项目目录里执行：
 
 ```
-python -m http.server 8000
+node serve.mjs
 ```
 
 然后打开 http://localhost:8000 。页面用到了 ES module，直接双击 `index.html` 无法运行。
