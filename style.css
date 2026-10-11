@@ -583,8 +583,9 @@ body.video-ready .video-mode { display: flex; }
 
 /* === Intro overlay === */
 /* 纯 CSS 固定动画：出场时间全部写死在 animation-delay 里，只动 transform / opacity，
-   由合成线程播放，页面加载时主线程再忙也不掉帧。时间轴：
-   !×5 每隔 130ms 弹入（各 500ms）→ 1020ms 全部到位 → 停留 400ms → 1420ms 起淡出 350ms */
+   由合成线程播放，页面加载时主线程再忙也不掉帧。时间轴（总长 2s）：
+   !×5 每隔 130ms 弹入（各 500ms）→ 1020ms 全部到位 → 停留 630ms → 1650ms 起淡出 350ms。
+   两位成员的动图下载好之前带 .waiting，整段动画停在起点（index.html 里的脚本控制） */
 
 #intro {
   position: fixed; inset: 0; z-index: 9999;
@@ -592,8 +593,9 @@ body.video-ready .video-mode { display: flex; }
   /* 与「MYGO五人gif」的纯色背景完全一致，动图贴上去看不出边界 */
   background: #7BCCE0;
   will-change: opacity;
-  animation: intro-out 0.35s ease 1.42s forwards;
+  animation: intro-out 0.35s ease 1.65s forwards;
 }
+#intro.waiting, #intro.waiting .intro-bang { animation-play-state: paused; }
 @keyframes intro-out {
   to { opacity: 0; visibility: hidden; }
 }

@@ -31,16 +31,26 @@
   <script>
     (function () {
       var intro = document.getElementById('intro');
-      // 每次随机挑两位成员的动图放在感叹号左右；加载完再淡入，没来得及加载就不出现
+      // 每次随机挑两位成员的动图放在感叹号左右。动图下载好之前动画先暂停（只显示同色底），
+      // 两张都到了再让感叹号和人物一起开始；最多等 3 秒，超时就照常播放
       var names = ['高松灯', '千早爱音', '要乐奈', '长崎爽世', '椎名立希'];
       var a = Math.floor(Math.random() * 5);
       var b = (a + 1 + Math.floor(Math.random() * 4)) % 5;
+      var pending = 2;
+      var start = function () { intro.classList.remove('waiting'); };
+      intro.classList.add('waiting');
+      setTimeout(start, 3000);
       [a, b].forEach(function (k, i) {
         var img = intro.querySelectorAll('.intro-gif')[i];
-        img.onload = function () { img.classList.add('loaded'); };
+        img.onload = function () {
+          img.classList.add('loaded');
+          if (--pending === 0) start();
+        };
+        img.onerror = function () { if (--pending === 0) start(); };
+        img.fetchPriority = 'high'; // 和页面其他图片、three.js 抢带宽时优先下载动图
         img.src = encodeURI('MYGO五人gif/' + names[k] + '.gif');
       });
-      // 淡出动画结束后移除 overlay；动画本身不靠这段脚本
+      // 淡出动画结束后移除 overlay；动画计时本身在 CSS 里
       intro.addEventListener('animationend', function (e) {
         if (e.target === this) this.remove();
       });
