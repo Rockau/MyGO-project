@@ -3,6 +3,7 @@ import { initPlayer, playSong, startShow, beatBus } from './player.js';
 import { initStage } from './stage.js';
 import { initMemberBg } from './memberBg.js';
 import { initCursor } from './cursor.js';
+import { initCompassCursor } from './compass-cursor.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -526,6 +527,7 @@ initBluray();
 initRelated();
 observeReveals();
 initStage({ onSelect: (id) => members.focus(id) });
+initCompassCursor('#members');
 
 $('#start-show').addEventListener('click', () => startShow({ backdrop: true }));
 // 播放时让感叹号跟着节拍跳动

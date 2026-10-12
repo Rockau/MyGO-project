@@ -647,3 +647,308 @@ body.video-ready .video-mode { display: flex; }
 @media (prefers-reduced-motion: reduce) {
   #intro { display: none; }
 }
+
+/* ==================== 指南针光标系统 ==================== */
+/* 启用后隐藏系统箭头；成员介绍区保留各成员的专属光标（cursor.js），不受影响 */
+html.compass-on, html.compass-on :not(:is(#members, #members *)) { cursor: none !important; }
+html.compass-on #members { cursor: auto; }
+
+
+.compass-orb {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--orb-color, #5a7ac9);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0.9;
+  transition:
+    width 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.compass-orb-active {
+  width: 280px;
+  height: 280px;
+  filter: blur(56px);
+  opacity: 0.7;
+}
+
+.compass-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  color: #7aa2ff;
+  pointer-events: none;
+  z-index: 10002;
+  will-change: transform;
+  transition:
+    color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.compass-cursor svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  /* 细线在浅色按钮上也看得清 */
+  filter: drop-shadow(0 0 1.5px rgba(7, 8, 15, 0.7));
+}
+
+.compass-cursor .needle {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.compass-cursor-hover {
+  width: 48px;
+  height: 48px;
+}
+
+.compass-cursor-down {
+  width: 24px;
+  height: 24px;
+}
+
+.compass-trail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--trail-color, #7aa2ff);
+  box-shadow: 0 0 8px var(--trail-color, #7aa2ff);
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0.75;
+  transform: translate(-50%, -50%);
+  animation: compass-trail-fade 0.9s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes compass-trail-fade {
+  0% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+}
+
+.compass-ripple {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10001;
+  color: var(--ripple-color, #7aa2ff);
+  will-change: transform, opacity;
+}
+
+.compass-ripple svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.compass-ripple .ring-main {
+  transform-origin: 50% 50%;
+  animation: compass-ring-main 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes compass-ring-main {
+  0% {
+    transform: scale(0.15);
+    opacity: 0.9;
+  }
+  60% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.compass-ripple .ring-sub {
+  transform-origin: 50% 50%;
+  animation: compass-ring-sub 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes compass-ring-sub {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+.compass-ripple .ticks {
+  transform-origin: 50% 50%;
+  animation: compass-ticks 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes compass-ticks {
+  0% {
+    transform: rotate(0deg) scale(0.2);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotate(24deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+.compass-ripple .spark {
+  transform-origin: 50% 50%;
+  animation: compass-spark 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes compass-spark {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* 悬停在舞台角色上：换成角色代表色，并微微发光 */
+.compass-cursor-glow svg {
+  /* 先描一圈深色轮廓保证浅色背景上也看得清，外面再发光 */
+  filter: drop-shadow(0 0 1.5px rgba(7, 8, 15, 0.8)) drop-shadow(0 0 3px currentColor) drop-shadow(0 0 9px currentColor);
+}
+
+/* 长按时指针周围闪烁的星星：外层定位（跟随指针由 JS 设置），里层负责出现、闪烁和淡出 */
+.compass-sparkle {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 10001;
+  pointer-events: none;
+}
+.compass-sparkle svg {
+  position: absolute;
+  left: calc(var(--size) / -2);
+  top: calc(var(--size) / -2);
+  width: var(--size);
+  height: var(--size);
+  fill: #fff;
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px currentColor) drop-shadow(0 0 9px currentColor);
+  animation: compass-sparkle-life var(--life) ease-out forwards;
+}
+.compass-sparkle path { animation: compass-sparkle-twinkle var(--twinkle) ease-in-out infinite alternate; }
+.compass-sparkle.out {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+@keyframes compass-sparkle-life {
+  0%   { transform: scale(0) rotate(0deg); }
+  20%  { transform: scale(1) rotate(30deg); }
+  100% { transform: scale(0.3) rotate(90deg); opacity: 0; }
+}
+@keyframes compass-sparkle-twinkle {
+  from { opacity: 1; }
+  to   { opacity: 0.35; }
+}
+
+/* 长按松开后弹出的 MyGO!!!!!（乐队蓝 #3388BB）：
+   0–0.3s 弹出 → 0.3–1s 斜光从左扫到右 → 0.95s 起末尾的小星星闪一下 → 1.35s 起一起淡出 */
+.compass-mygo {
+  position: fixed;
+  z-index: 10001;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 22px));
+  animation: compass-mygo-life 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.compass-mygo-text {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  /* 字只显示渐变的「字形部分」，渐变里带一道斜着的白光，移动背景就是扫光 */
+  background: linear-gradient(110deg, #3388bb 0 42%, #e8f6ff 49%, #ffffff 50%, #e8f6ff 51%, #3388bb 58% 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 6px rgba(51, 136, 187, 0.55)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+  animation: compass-mygo-sweep 0.7s ease-in-out 0.3s forwards;
+}
+.compass-mygo-star {
+  position: absolute;
+  right: -12px;
+  top: -6px;
+  width: 16px;
+  height: 16px;
+  opacity: 0;
+  transform: scale(0) rotate(0deg);
+  filter: drop-shadow(0 0 4px #bfe6ff) drop-shadow(0 0 8px #3388bb);
+  animation: compass-mygo-star 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.95s forwards;
+}
+@keyframes compass-mygo-life {
+  0%   { opacity: 0; transform: translate(-50%, calc(-100% - 10px)) scale(0.7); }
+  16%  { opacity: 1; transform: translate(-50%, calc(-100% - 24px)) scale(1.06); }
+  24%  { transform: translate(-50%, calc(-100% - 22px)) scale(1); }
+  75%  { opacity: 1; transform: translate(-50%, calc(-100% - 22px)) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, calc(-100% - 30px)) scale(1); }
+}
+@keyframes compass-mygo-sweep {
+  to { background-position: 0% 0; }
+}
+@keyframes compass-mygo-star {
+  0%   { opacity: 0; transform: scale(0) rotate(0deg); }
+  45%  { opacity: 1; transform: scale(1.25) rotate(45deg); }
+  100% { opacity: 0.85; transform: scale(0.8) rotate(90deg); }
+}
+
+/* 触屏设备不显示指南针光标 */
+@media (hover: none), (pointer: coarse) {
+  .compass-orb,
+  .compass-cursor,
+  .compass-ripple,
+  .compass-trail,
+  .compass-sparkle,
+  .compass-mygo {
+    display: none;
+  }
+}

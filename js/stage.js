@@ -214,6 +214,8 @@ export function initStage({ onSelect }) {
         label.innerHTML = `<b>${hovered.m.nameZh}</b><span>${hovered.m.part}</span>`;
         label.style.setProperty('--c', hovered.m.color);
       }
+      // 通知指南针光标换成该角色的代表色（compass-cursor.js）
+      dispatchEvent(new CustomEvent('stage-hover', { detail: hovered ? hovered.m.color : null }));
     }
     if (hovered) {
       tmp.set(hovered.x, 3.55, hovered.z).project(camera);
