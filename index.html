@@ -7,7 +7,9 @@
   <meta name="description" content="《BanG Dream! It's MyGO!!!!!》粉丝介绍页：成员、故事、音乐与设定集。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@500;700;900&display=swap" rel="stylesheet" />
+  <!-- 网络字体异步加载（先用系统字体显示，下好再替换）：同步的外链样式表会挡住后面的入场脚本，大陆访问 Google Fonts 慢时整页都要干等 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+JP:wght@500;700;900&display=swap" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="style.css" />
   <script type="importmap">
     { "imports": { "three": "./js/vendor/three.module.js" } }
@@ -18,7 +20,7 @@
 <body>
   <!-- 入场动画：纯 CSS 固定动画（见 style.css「Intro overlay」），不依赖 JS 计时 -->
   <div id="intro" aria-hidden="true">
-    <img class="intro-gif intro-gif-left" alt="" />
+    <video class="intro-vid intro-vid-left" muted playsinline loop preload="auto"></video>
     <div class="intro-bangs">
       <span class="intro-bang" style="--i:0">!</span>
       <span class="intro-bang" style="--i:1">!</span>
@@ -26,30 +28,48 @@
       <span class="intro-bang" style="--i:3">!</span>
       <span class="intro-bang" style="--i:4">!</span>
     </div>
-    <img class="intro-gif intro-gif-right" alt="" />
+    <video class="intro-vid intro-vid-right" muted playsinline loop preload="auto"></video>
   </div>
   <script>
     (function () {
       var intro = document.getElementById('intro');
-      // 每次随机挑两位成员的动图放在感叹号左右。动图下载好之前动画先暂停（只显示同色底），
-      // 两张都到了再让感叹号和人物一起开始；最多等 3 秒，超时就照常播放
+      // 系统设置了减少动态效果时 CSS 直接隐藏入场动画，也就不用下载视频
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return intro.remove();
+      // 每次随机挑两位成员的视频放在感叹号左右。两段视频都完整下载并能播放之前，整段动画停在起点（只显示同色底）；
+      // 准备好后在同一帧里让两段视频和感叹号一起开始。2 秒还没下载完就不放人物、只播感叹号；
+      // 下载完了但页面脚本初始化占着主线程、迟迟准备不好时，最多再等到 4 秒
       var names = ['高松灯', '千早爱音', '要乐奈', '长崎爽世', '椎名立希'];
       var a = Math.floor(Math.random() * 5);
       var b = (a + 1 + Math.floor(Math.random() * 4)) % 5;
-      var pending = 2;
-      var start = function () { intro.classList.remove('waiting'); };
+      // 竖屏时人物缩在下方两角，用 360×640 的小版本
+      var suffix = matchMedia('(max-aspect-ratio: 1 / 1)').matches ? '-s' : '';
+      var vids = intro.querySelectorAll('.intro-vid');
+      var started = false;
+      var downloaded = 0;
+      var start = function (withVideo) {
+        if (started) return;
+        started = true;
+        requestAnimationFrame(function () {
+          if (withVideo) [].forEach.call(vids, function (v) { v.classList.add('loaded'); v.play(); });
+          intro.classList.remove('waiting');
+        });
+      };
       intro.classList.add('waiting');
-      setTimeout(start, 3000);
-      [a, b].forEach(function (k, i) {
-        var img = intro.querySelectorAll('.intro-gif')[i];
-        img.onload = function () {
-          img.classList.add('loaded');
-          if (--pending === 0) start();
-        };
-        img.onerror = function () { if (--pending === 0) start(); };
-        img.fetchPriority = 'high'; // 和页面其他图片、three.js 抢带宽时优先下载动图
-        img.src = encodeURI('MYGO五人gif/' + names[k] + '.gif');
-      });
+      setTimeout(function () { if (downloaded < 2) start(false); }, 2000);
+      setTimeout(function () { start(false); }, 4000);
+      Promise.all([a, b].map(function (k, i) {
+        var v = vids[i];
+        // 先整段下载成 blob 再交给 <video>，避免边下边播卡顿；再试播一下立刻暂停回到开头，
+        // 确认能自动播放（省电模式等会拒绝）且首帧已解码，正式开始时两边才能同一帧起步
+        return fetch(encodeURI('MYGO五人视频/' + names[k] + suffix + '.mp4'), { priority: 'high' })
+          .then(function (r) { if (!r.ok) throw r.status; return r.blob(); })
+          .then(function (blob) {
+            downloaded++;
+            v.src = URL.createObjectURL(blob);
+            return v.play();
+          })
+          .then(function () { v.pause(); v.currentTime = 0; });
+      })).then(function () { start(true); }, function () { start(false); });
       // 淡出动画结束后移除 overlay；动画计时本身在 CSS 里
       intro.addEventListener('animationend', function (e) {
         if (e.target === this) this.remove();

@@ -585,12 +585,12 @@ body.video-ready .video-mode { display: flex; }
 /* 纯 CSS 固定动画：出场时间全部写死在 animation-delay 里，只动 transform / opacity，
    由合成线程播放，页面加载时主线程再忙也不掉帧。时间轴（总长 2s）：
    !×5 每隔 130ms 弹入（各 500ms）→ 1020ms 全部到位 → 停留 630ms → 1650ms 起淡出 350ms。
-   两位成员的动图下载好之前带 .waiting，整段动画停在起点（index.html 里的脚本控制） */
+   两位成员的视频下载好之前带 .waiting，整段动画停在起点（index.html 里的脚本控制） */
 
 #intro {
   position: fixed; inset: 0; z-index: 9999;
   display: flex; align-items: center; justify-content: center;
-  /* 与「MYGO五人gif」的纯色背景完全一致，动图贴上去看不出边界 */
+  /* 与「MYGO五人视频」的纯色背景一致，视频贴上去看不出边界 */
   background: #7BCCE0;
   will-change: opacity;
   animation: intro-out 0.35s ease 1.65s forwards;
@@ -600,8 +600,8 @@ body.video-ready .video-mode { display: flex; }
   to { opacity: 0; visibility: hidden; }
 }
 
-/* 两位成员的动图（720×1280 竖图，人物在画面中间），分列感叹号左右 */
-.intro-gif {
+/* 两位成员的视频（720×1280 竖屏，人物在画面中间），分列感叹号左右 */
+.intro-vid {
   position: absolute; top: 50%;
   height: min(84vh, 96vw); aspect-ratio: 720 / 1280;
   transform: translate(-50%, -50%);
@@ -609,14 +609,14 @@ body.video-ready .video-mode { display: flex; }
   clip-path: inset(0 0 2.43% 0);
   opacity: 0; transition: opacity 0.25s ease;
 }
-.intro-gif.loaded { opacity: 1; }
-.intro-gif-left { left: calc(50% - clamp(230px, 27vw, 520px)); }
-.intro-gif-right { left: calc(50% + clamp(230px, 27vw, 520px)); }
+.intro-vid.loaded { opacity: 1; }
+.intro-vid-left { left: calc(50% - clamp(230px, 27vw, 520px)); }
+.intro-vid-right { left: calc(50% + clamp(230px, 27vw, 520px)); }
 /* 竖屏：放不下左右两侧，改到下方两角，感叹号仍在正中 */
 @media (max-aspect-ratio: 1 / 1) {
-  .intro-gif { top: auto; bottom: 0; height: min(44vh, 88vw); transform: translateX(-50%); }
-  .intro-gif-left { left: 27%; }
-  .intro-gif-right { left: 73%; }
+  .intro-vid { top: auto; bottom: 0; height: min(44vh, 88vw); transform: translateX(-50%); }
+  .intro-vid-left { left: 27%; }
+  .intro-vid-right { left: 73%; }
 }
 
 .intro-bangs {

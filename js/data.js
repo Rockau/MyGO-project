@@ -2,11 +2,15 @@
 
 export const asset = (path) => encodeURI(path);
 
-const BOOK_DIR = "「BanG Dream! It's MyGO!!!!!」设定集";
+export const BOOK_DIR = "「BanG Dream! It's MyGO!!!!!」设定集";
 export const bookPage = (n) => asset(`${BOOK_DIR}/${String(n).padStart(3, '0')}.jpg`);
 
-const BD_DIR = "BanG Dream! It's MyGO!!!!! 蓝光盘附赠扫描本/BanG Dream! It's MyGO!!!!! BD Scans + Booklet";
+export const BD_DIR = "BanG Dream! It's MyGO!!!!! 蓝光盘附赠扫描本/BanG Dream! It's MyGO!!!!! BD Scans + Booklet";
 export const bdPage = (n) => asset(`${BD_DIR}/${String(n).padStart(2, '0')}.jpg`);
+
+// 页面里的小图用 800px 宽的 WebP 缩略图（make-media.mjs 生成），原图只在灯箱里加载
+export const bookThumb = (n) => asset(`缩略图/设定集/${String(n).padStart(3, '0')}.webp`);
+export const bdThumb = (n) => asset(`缩略图/蓝光/${String(n).padStart(2, '0')}.webp`);
 
 export const OUTFITS = [
   { key: 'live', label: '演出服', path: (n) => `mygo成员演出服装/${n}_ON演出服.webp` },

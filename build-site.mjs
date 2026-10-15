@@ -1,35 +1,14 @@
 // 生成用于发布的静态站点：只复制网页实际引用到的图片（设定集、蓝光扫描只取用到的页）。
 // 用法：node build-site.mjs [输出目录]，默认输出到项目旁边的 MyGO-site 文件夹。
 
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const out = resolve(process.argv[2] ?? join(root, '..', 'MyGO-site'));
-const data = await import(pathToFileURL(join(root, 'js', 'data.js')).href);
-const { MEMBERS, OUTFITS, AVATAR_DIR, SCENES, RELATED, GALLERY, BLURAY } = data;
-
-// 设定集页码：成员原稿、画廊、舞台、相关乐队，以及 index.html 里写死的 data-page
-const html = readFileSync(join(root, 'index.html'), 'utf8');
-const book = new Set([
-  1, // 首屏背景（main.js 里设置）
-  ...[...html.matchAll(/data-page="(\d+)"/g)].map((m) => Number(m[1])),
-  ...MEMBERS.flatMap((m) => m.pages),
-  ...GALLERY.flatMap((g) => g.pages),
-  ...SCENES.map((s) => s.page),
-  RELATED.mujica.page,
-  ...RELATED.mujica.members.map((m) => m.page),
-]);
-// 蓝光扫描页：特典区、成员原稿条、Ave Mujica 人物卡
-const bd = new Set([
-  ...BLURAY.flatMap((v) => [v.cover, ...v.pages.map(([n]) => n)]),
-  ...MEMBERS.map((m) => m.bd),
-  ...RELATED.mujica.members.map((m) => m.bd),
-]);
-
-const BOOK_DIR = "「BanG Dream! It's MyGO!!!!!」设定集";
-const BD_DIR = "BanG Dream! It's MyGO!!!!! 蓝光盘附赠扫描本/BanG Dream! It's MyGO!!!!! BD Scans + Booklet";
+const { MEMBERS, OUTFITS, AVATAR_DIR } = await import(pathToFileURL(join(root, 'js', 'data.js')).href);
+const { book, bd, bookFile, bdFile, bookThumbFile, bdThumbFile } = await import(pathToFileURL(join(root, 'pages.mjs')).href);
 
 // 清空输出目录，但保留其中的 .git（用于反复发布）
 mkdirSync(out, { recursive: true });
@@ -46,12 +25,12 @@ const copy = (rel) => {
 for (const m of MEMBERS) for (const o of OUTFITS) copy(o.path(m.file));
 for (const m of MEMBERS) copy(`${AVATAR_DIR}/${m.file}/${m.avatar}`);
 copy('熊猫/熊猫.png'); // 立希背景点击弹出的熊猫（memberBg.js）
-copy('MYGO五人gif'); // 入场动画随机两位成员的动图（index.html）
+copy('MYGO五人视频'); // 入场动画随机两位成员的视频（index.html，由 make-media.mjs 生成）
 for (const m of MEMBERS) copy(`MYGO角色签名/${m.file}.png`); // 成员签名（main.js）
 // copy('网页入场动画素材/MYGO的logo蓝色的.jpeg');  // 后续动画启用
 // copy('网页入场动画素材/收尾动作.jpg');             // 后续动画启用
-for (const n of book) copy(`${BOOK_DIR}/${String(n).padStart(3, '0')}.jpg`);
-for (const n of bd) copy(`${BD_DIR}/${String(n).padStart(2, '0')}.jpg`);
+for (const n of book) copy(bookFile(n)), copy(bookThumbFile(n));
+for (const n of bd) copy(bdFile(n)), copy(bdThumbFile(n)); // 缩略图缺失时先运行 node make-media.mjs
 
 // GitHub Pages 默认会用 Jekyll 处理文件，关掉它，原样发布
 writeFileSync(join(out, '.nojekyll'), '');

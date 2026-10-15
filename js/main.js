@@ -1,4 +1,4 @@
-import { MEMBERS, OUTFITS, SONGS, ALBUM, STORY, SCENES, RELATED, GALLERY, BLURAY, bookPage, bdPage, outfitSrc, avatarSrc, signSrc } from './data.js';
+import { MEMBERS, OUTFITS, SONGS, ALBUM, STORY, SCENES, RELATED, GALLERY, BLURAY, bookPage, bdPage, bookThumb, bdThumb, outfitSrc, avatarSrc, signSrc } from './data.js';
 import { initPlayer, playSong, startShow, beatBus } from './player.js';
 import { initStage } from './stage.js';
 import { initMemberBg } from './memberBg.js';
@@ -219,8 +219,8 @@ function initMembers() {
       <div class="book-strip">
         <p class="strip-label">设定集原稿 <span>FOOTPRINTS P.${String(m.pages[0]).padStart(3, '0')}–${String(m.pages.at(-1)).padStart(3, '0')} · 蓝光上巻特典小册子</span></p>
         <div class="strip">
-          ${m.pages.map((p, k) => `<button type="button" class="strip-item" data-k="${k}"><img loading="lazy" src="${bookPage(p)}" alt="${m.nameZh} 设定稿 P.${p}" /></button>`).join('')}
-          <button type="button" class="strip-item wide" data-k="${m.pages.length}"><img loading="lazy" src="${bdPage(m.bd)}" alt="${m.nameZh} 蓝光特典小册子" /><span>蓝光特典</span></button>
+          ${m.pages.map((p, k) => `<button type="button" class="strip-item" data-k="${k}"><img loading="lazy" src="${bookThumb(p)}" alt="${m.nameZh} 设定稿 P.${p}" /></button>`).join('')}
+          <button type="button" class="strip-item wide" data-k="${m.pages.length}"><img loading="lazy" src="${bdThumb(m.bd)}" alt="${m.nameZh} 蓝光特典小册子" /><span>蓝光特典</span></button>
         </div>
       </div>
       <div class="trivia">
@@ -376,7 +376,7 @@ function initScenes() {
   grid.innerHTML = SCENES.map(
     (s, i) => `
     <figure class="scene reveal" style="--d:${i * 90}ms" data-i="${i}">
-      <div class="scene-img"><img loading="lazy" src="${bookPage(s.page)}" alt="${s.title}" /></div>
+      <div class="scene-img"><img loading="lazy" src="${bookThumb(s.page)}" alt="${s.title}" /></div>
       <figcaption><h3>${s.title}</h3><p>${s.text}</p></figcaption>
     </figure>`,
   ).join('');
@@ -402,7 +402,7 @@ function initGallery() {
     const g = groups.find((x) => x.key === key);
     items = g.pages.map((p) => pageItem(p));
     grid.innerHTML = g.pages
-      .map((p, i) => `<button type="button" class="tile" data-i="${i}" style="--d:${(i % 8) * 40}ms"><img loading="lazy" src="${bookPage(p)}" alt="设定集 P.${p}" /><span>P.${String(p).padStart(3, '0')}</span></button>`)
+      .map((p, i) => `<button type="button" class="tile" data-i="${i}" style="--d:${(i % 8) * 40}ms"><img loading="lazy" src="${bookThumb(p)}" alt="设定集 P.${p}" /><span>P.${String(p).padStart(3, '0')}</span></button>`)
       .join('');
     $$('button', tabs).forEach((b) => b.classList.toggle('active', b.dataset.key === key));
   }
@@ -426,7 +426,7 @@ function initBluray() {
   vols.innerHTML = BLURAY.map(
     (v, i) => `
     <article class="bd-vol reveal" style="--d:${i * 100}ms" data-key="${v.key}">
-      <button type="button" class="bd-cover" aria-label="查看${v.label}封面"><img loading="lazy" src="${bdPage(v.cover)}" alt="蓝光${v.label}封面" /></button>
+      <button type="button" class="bd-cover" aria-label="查看${v.label}封面"><img loading="lazy" src="${bdThumb(v.cover)}" alt="蓝光${v.label}封面" /></button>
       <div class="bd-vol-text">
         <p class="eyebrow">Blu-ray ${v.title}</p>
         <h3>${v.label}</h3>
@@ -442,7 +442,7 @@ function initBluray() {
     const v = BLURAY.find((x) => x.key === key);
     items = v.pages.map(([n, cap]) => ({ src: bdPage(n), caption: `蓝光${v.label} · ${cap}` }));
     grid.innerHTML = v.pages
-      .map(([n, cap], i) => `<button type="button" class="tile" data-i="${i}" style="--d:${(i % 8) * 40}ms"><img loading="lazy" src="${bdPage(n)}" alt="${cap}" /><span>${cap}</span></button>`)
+      .map(([n, cap], i) => `<button type="button" class="tile" data-i="${i}" style="--d:${(i % 8) * 40}ms"><img loading="lazy" src="${bdThumb(n)}" alt="${cap}" /><span>${cap}</span></button>`)
       .join('');
     $$('button', tabs).forEach((b) => b.classList.toggle('active', b.dataset.key === key));
   }
@@ -479,7 +479,7 @@ function initRelated() {
       <p>${crychic.text}</p>
     </article>
     <article class="band-card mujica reveal" data-page="${mujica.page}">
-      <img loading="lazy" src="${bookPage(mujica.page)}" alt="Ave Mujica 舞台" />
+      <img loading="lazy" src="${bookThumb(mujica.page)}" alt="Ave Mujica 舞台" />
       <div>
         <p class="eyebrow">AFTER</p>
         <h3>${mujica.name}</h3>
@@ -492,7 +492,7 @@ function initRelated() {
     .map(
       (m, i) => `
     <figure class="mujica-card reveal" style="--d:${i * 80}ms" data-i="${i}">
-      <div class="mujica-img"><img loading="lazy" src="${bookPage(m.page)}" alt="${m.name}" /></div>
+      <div class="mujica-img"><img loading="lazy" src="${bookThumb(m.page)}" alt="${m.name}" /></div>
       <figcaption>
         <span class="mask">${m.mask}</span>
         <h4>${m.name}</h4>
