@@ -8,7 +8,10 @@
   --brand: #8fa8ff;
   --rainbow: linear-gradient(90deg, #77bbdd, #ff8899, #77dd77, #ffdd88, #7777aa);
   --sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-  --serif: 'Noto Serif JP', 'Yu Mincho', 'Songti SC', serif;
+  /* 用简体中文版思源宋体：日文版 Noto Serif JP 没有「员、绍、乐、队」等简体字，缺的字会退回系统字体，同一行标题粗细不一。
+     SC 版同时包含假名和日文汉字，日文歌名、台词也能用同一款字体显示 */
+  /* 'MyGO Serif' 是随站点发布的思源宋体 SC 子集（fonts/fonts.css，由 make-media.mjs 生成），大陆访客连不上 Google Fonts 也一样显示 */
+  --serif: 'MyGO Serif', 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
@@ -298,14 +301,15 @@ h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4.4vw, 3.2re
 .strip-item:hover { transform: translateY(-6px) rotate(-1deg); border-color: var(--c); box-shadow: 0 16px 40px -10px rgba(var(--c-rgb), 0.55); }
 
 .trivia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px; }
-.card { padding: 0; border: 0; background: none; perspective: 900px; height: 150px; text-align: left; }
-.card-inner { position: relative; display: block; width: 100%; height: 100%; transition: transform 0.6s var(--ease); transform-style: preserve-3d; }
+/* 正反两面叠在同一个网格格子里，卡片高度由较长的一面撑开（同一行的卡片被 .trivia 网格拉成一样高） */
+.card { padding: 0; border: 0; background: none; perspective: 900px; min-height: 150px; text-align: left; }
+.card-inner { position: relative; display: grid; width: 100%; height: 100%; min-height: 150px; transition: transform 0.6s var(--ease); transform-style: preserve-3d; }
 .card.flipped .card-inner { transform: rotateY(180deg); }
 .card-front, .card-back {
-  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px;
+  position: relative; grid-area: 1 / 1; display: flex; flex-direction: column; justify-content: center; gap: 6px;
   padding: 16px 18px; border-radius: 14px; backface-visibility: hidden; border: 1px solid rgba(var(--c-rgb), 0.35);
 }
-.card-front { background: rgba(10, 12, 24, 0.7); font-weight: 700; font-size: 1.02rem; backdrop-filter: blur(8px); }
+.card-front { padding-bottom: 30px; background: rgba(10, 12, 24, 0.7); font-weight: 700; font-size: 1.02rem; backdrop-filter: blur(8px); }
 .card-front i { font-style: normal; font-family: var(--serif); font-size: 0.78rem; color: var(--c); letter-spacing: 0.2em; }
 .card-front::after { content: '点击翻转 ↻'; position: absolute; right: 14px; bottom: 10px; font-size: 0.7rem; color: var(--muted); font-weight: 400; }
 .card-back { transform: rotateY(180deg); background: linear-gradient(150deg, rgba(var(--c-rgb), 0.85), rgba(var(--c-rgb), 0.55)); color: #0b0d17; font-size: 0.88rem; font-weight: 500; line-height: 1.6; }

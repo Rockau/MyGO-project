@@ -21,7 +21,7 @@ const copy = (rel) => {
   cpSync(src, join(out, rel), { recursive: true });
 };
 
-['index.html', 'style.css', 'js'].forEach(copy);
+['index.html', 'style.css', 'js', 'fonts'].forEach(copy);
 for (const m of MEMBERS) for (const o of OUTFITS) copy(o.path(m.file));
 for (const m of MEMBERS) copy(`${AVATAR_DIR}/${m.file}/${m.avatar}`);
 copy('熊猫/熊猫.png'); // 立希背景点击弹出的熊猫（memberBg.js）
